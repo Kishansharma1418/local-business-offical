@@ -1,0 +1,38 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('prefixes', function (Blueprint $table) {
+            $table->id();
+            $table->string('module')->unique();
+
+            $table->string('prefix')->nullable(); 
+
+            $table->integer('start_from')->default(1);
+            $table->integer('current_number')->default(0);
+
+            $table->string('separator')->default('-'); 
+
+            $table->boolean('status')->default(1);
+            $table->timestamps();
+        });
+
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('prefixes');
+    }
+};

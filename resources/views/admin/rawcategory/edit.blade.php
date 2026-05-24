@@ -1,0 +1,131 @@
+@extends('include.master')
+
+@section('content')
+    <div class="main-content-container overflow-hidden">
+
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4 mt-1">
+            <h3 class="mb-0">Edit Raw Category</h3>
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb align-items-center mb-0 lh-1">
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-decoration-none">
+                            <i class="ri-home-8-line fs-15 text-primary me-1"></i>
+                            <span class="text-body fs-14 hover">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('rawcategory.index') }}" class="text-decoration-none">Raw Category List</a>
+                    </li>
+                    <li class="breadcrumb-item active">Edit Raw Categorry</li>
+                </ol>
+            </nav>
+        </div>
+
+        {{-- Validation Errors --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <strong>Please fix the following errors:</strong>
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        {{-- Success Message --}}
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
+        <form action="{{ route('rawcategory.update', $category->id) }}" method="POST" class="needs-validation" novalidate>
+            @csrf
+            @method('PUT')
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card bg-white p-20 rounded-10 border border-white mb-4">
+                        <h3 class="mb-20">Category Information</h3>
+                        <div class="row">
+
+
+                            <div class="col-lg-6 mb-20">
+                                <label class="label fs-16 mb-2">Raw Category Code <span class="text-danger">*</span></label>
+                                <input type="text" name="code"
+                                    value="{{ old('code', $category->code) }}" class="form-control"
+                                    required>
+                            </div>
+
+                            {{-- Department Name --}}
+                            <div class="col-lg-6 mb-20">
+                                <label class="label fs-16 mb-2">Raw Category Name <span class="text-danger">*</span></label>
+                                <input type="text" name="name"
+                                    value="{{ old('name', $category->name) }}" class="form-control"
+                                    required>
+                            </div>
+
+                            {{-- Parent Department --}}
+                            <div class="col-lg-6 mb-20">
+                                <label class="label fs-16 mb-2">Parent Raw Category</label>
+                                <select name="parent_category_id" class=" form-control">
+                                    <option value="">Select Parent Category </option>
+                                    @foreach ($categories as $cat)
+                                        <option value="{{ $cat->id }}"
+                                            {{ old('parent_category_id', $category->parent_category_id) == $cat->id ? 'selected' : '' }}>
+                                            {{ $cat->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+
+                            {{-- Description --}}
+                            <div class="col-lg-6 mb-20">
+                                <label class="label fs-16 mb-2">Description</label>
+                                <textarea name="description" class="form-control" placeholder="Please Enter Description">{{ old('description', $category->description) }}</textarea>
+                            </div>
+                          
+                            {{-- Status --}}
+                            <div class="col-lg-6 mb-20">
+                                <label class="label fs-16 mb-2">Status</label>
+                                <select name="status" class="form-select form-control" required>
+                                    <option value="1"
+                                        {{ old('status', $category->status) == '1' ? 'selected' : '' }}>Active
+                                    </option>
+                                    <option value="0"
+                                        {{ old('status', $category->status) == '0' ? 'selected' : '' }}>Inactive
+                                    </option>
+                                </select>
+                            </div>
+
+                            {{-- Actions --}}
+                            <div class="col-lg-12 mt-3">
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary fw-normal text-white">Update Raw
+                                        Category</button>
+                                    <a href="{{ route('rawcategory.index') }}"
+                                        class="btn btn-danger fw-normal text-white">Cancel</a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+@endsection
+
+@push('scripts')
+    
+<script>
+        $(document).ready(function() {
+
+            const recordId = "{{ encrypt($category->id) }}";
+
+             setupRealtimeValidation('Category', 'code', 'input[name="code"]', recordId);
+        });
+
+    </script>
+@endpush
